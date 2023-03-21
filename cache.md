@@ -67,31 +67,3 @@
 
 
 > #### 想要保证数据库和缓存一致性，推荐采用「先更新数据库，再删除缓存」方案，并配合「消息队列」或「订阅变更日志」的方式来做
-
-# 方案决断
-
-## 歌华
-
-- 背景
-
-> 歌华: 需要提供接口承载 10 万 并发, 数据实时性要求不高, 但是确保每次请求一定要获取到数据
-
-- 技术选型
-
-> mysql + redis + lua + local cache
-
-![image-20220930160009393](assets/image-20220930160009393.png)
-
-# 分布式锁
-- redis + lua (我们选用)
-
-- etcd
-
-````
-为了简化分布式锁、分布式选举、分布式事务的实现，etcd社区提供了一个名为concurrency的包来帮助我们更简单、正确的使用分布式锁。它的实现非常简单，主要流程如下：
-
-首先通过concurrency.NewSession方法创建Session，本质上是创建了一个TTL为10的Lease
-得到Session对象后，通过concurrency.NewMutex创建一个mutex对象，包括了Lease、key prefix等信息
-然后听过mutex对象的Lock方法尝试获取锁
-最后通过mutex对象的Unlock方法释放锁
-````
